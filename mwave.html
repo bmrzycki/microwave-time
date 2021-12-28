@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Microwave Time Converter</title>
+<meta charset="UTF-8">
+
+<!-- =[ Javascript block start ]========================================== -->
+<script>
+  const version = "2021.04.26.00";
+
+  function secsMwtime(secs) {
+      secs = Number(secs);
+      if (secs == NaN) {
+	  return "00:00";
+      }
+      let m = Math.floor(secs / 60).toString();
+      let s = (secs % 60).toString();
+      return `${m.padStart(2, 0)}:${s.padStart(2, 0)}`
+  }
+
+  function mwtimeSecs(mtime) {
+      let sp = mtime.split(':');
+      if (sp.length < 2) {
+	  return 0;
+      }
+      let m = Number(sp[0]);
+      let s = Number(sp[1]);
+      if (m == NaN || s == NaN) {
+	  return 0;
+      }
+      return (m * 60) + s;
+  }
+
+  function watts(w) {
+      w = Number(w);
+      if (w == NaN) {
+	  return 1000;
+      }
+      if (w < 4) {
+	  w = Math.floor(w * 1000);
+      }
+      return w < 5000 ? w : 1000;
+  }
+
+  function calc() {
+      let wIn = watts(document.mwForm.wIn.value);
+      let wOut = watts(document.mwForm.wOut.value);
+      document.mwForm.wIn.value = wIn;
+      document.mwForm.wOut.value = wOut;
+      let secs = document.mwForm.secs.value;
+      if (secs.indexOf(":") == -1) {
+	  secs = Number(secs);
+	  if (secs == NaN) {
+	      return;
+	  }
+      } else {
+	  secs = mwtimeSecs(secs);
+      }
+      document.mwForm.secs.value = secsMwtime(secs);
+      document.mwForm.mw.value = secsMwtime(
+	  Math.round(secs * (wIn / wOut)));
+  }
+
+window.onload = calc;
+</script>
+<!-- =[ Javascript block end ]============================================ -->
+
+<style>
+  input[type=text], textarea {
+      font-family: monospace;
+      font-size: 130%;
+      color: #AAAAAA;
+      background-color: #202020;
+      border-color: #303030;
+  }
+  .btn {
+      margin: 2px;
+      border: none;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 4px;
+      color: #000000;
+      background-color: #CCCCCC;
+  }
+  body {
+      color: #AAAAAA;
+      background-color: #101010;
+  }
+</style>
+</head>
+<body>
+  <form name="mwForm">
+    <input type="text" name="wIn" size="20" value="1100">
+    Input Wattage<br>
+    <input type="text" name="wOut" size="20" value="1580">
+    Output Wattage<br>
+    <input type="text" name="secs" size="20" value="1:00">
+    Time<br>
+    <br>
+    <input class="btn" type="button" value="Calculate" onClick="calc()"><br><br>
+    <textarea name="mw" readonly rows="1" cols="20"></textarea><br>
+  </form>
+</body>
+</html>
